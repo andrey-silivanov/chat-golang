@@ -15,7 +15,6 @@ $chat_bg: #F2F5F8;
 body {
   background: $white;
   font: 14px/20px "Lato", Arial, sans-serif;
-  color: white;
   margin: 0;
 }
 .content-wrapper {
@@ -38,6 +37,7 @@ body {
   background: $dark_grey;
   overflow-y: scroll;
   height: 100vh;
+  color: $white;
   .search {
     padding: 20px;
   }

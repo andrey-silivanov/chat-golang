@@ -147,7 +147,47 @@
 
 <script>
 export default {
-  name: "ChatComponent"
+  name: "ChatComponent",
+  mounted() {
+    this.ws()
+  },
+  methods: {
+    ws() {
+
+      let socket = new WebSocket("ws://localhost:3000/ws/22");
+
+      socket.onopen = function() {
+        console.log("[open] Соединение установлено");
+        console.log("Отправляем данные на сервер");
+        socket.send(
+            JSON.stringify({
+                  email: "test@gmail.com",
+                  username: "Vue man",
+                  message: "Hello from vue"
+                }
+            ));
+
+      };
+
+      socket.onmessage = function(event) {
+        console.log(`[message] Данные получены с сервера: ${event.data}`);
+      };
+
+      socket.onclose = function(event) {
+        if (event.wasClean) {
+          console.log(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+        } else {
+          // например, сервер убил процесс или сеть недоступна
+          // обычно в этом случае event.code 1006
+          console.log('[close] Соединение прервано');
+        }
+      };
+
+      socket.onerror = function(error) {
+        console.log(`[error] ${error.message}`);
+      };
+    }
+  }
 }
 </script>
 

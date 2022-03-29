@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="container-fluid">
   <div class="clearfix content-wrapper">
     <div class="row">
 
-    <people-list :show="true"/>
+    <people-list/>
     <chat-component/>
     </div>
 
@@ -20,7 +20,7 @@ import PeopleList from "@/components/PeopleList";
 import ChatComponent from "@/components/ChatComponent";
 
 export default {
-  name: "MainBlock",
+  name: "MainPage",
   components: {
     PeopleList,
     ChatComponent
