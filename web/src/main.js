@@ -1,5 +1,13 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
+import http from './http';
+import router from './router'
+import auth from './plugins/auth.js';
 
-createApp(App).mount('#app')
+const app = createApp(App)
+
+app.use(http)
+    .use(router)
+    .use(auth)
+    .mount('#app')

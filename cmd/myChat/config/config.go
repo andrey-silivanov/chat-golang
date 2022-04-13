@@ -3,27 +3,53 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"log"
+	"os"
+	"path"
+	"runtime"
 )
 
-var Config appConfig
-
-type appConfig struct {
-	// Пример переменной, загружаемой в функции LoadConfig
-	ConfigVar string
+type Config struct {
+	ServerPort string `mapstructure:"SERVER_PORT"`
+	FrontUrl   string `mapstructure:"FRONT_URL"`
+	DebugMode  bool   `mapstructure:"DEBUG"`
+	DbName     string `mapstructure:"DB_NAME"`
+	DbUrl      string `mapstructure:"DATABASE_URL"`
 }
 
-// LoadConfig загружает конфигурацию из файлов
-func LoadConfig(configPaths ...string) error {
-	v := viper.New()
-	v.SetConfigName("example") // <- имя конфигурационного файла
-	v.SetConfigType("yaml")
-	v.SetEnvPrefix("blueprint")
-	v.AutomaticEnv()
-	for _, path := range configPaths {
-		v.AddConfigPath(path) // <- // путь для поиска конфигурационного файла в
+func LoadConfig() (config *Config, err error) {
+
+	pathConfig := getAbsolutePath()
+	env := getenv("ENV")
+
+	configName := fmt.Sprintf("%s_config", env)
+
+	viper.AddConfigPath(pathConfig)
+	viper.SetConfigName(configName)
+	viper.SetConfigType("env")
+
+	viper.AutomaticEnv()
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(err)
 	}
-	if err := v.ReadInConfig(); err != nil {
-		return fmt.Errorf("failed to read the configuration file: %s", err)
+
+	err = viper.Unmarshal(&config)
+
+	return
+}
+
+func getAbsolutePath() string {
+	_, filename, _, _ := runtime.Caller(0)
+
+	return path.Join(path.Dir(filename), "../../../")
+}
+
+func getenv(key string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return "local"
 	}
-	return v.Unmarshal(&Config)
+	return value
 }
