@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"github.com/andrey-silivanov/chat-golang/cmd/myChat/models"
 	"github.com/andrey-silivanov/chat-golang/pkg/jwtToken"
 	"github.com/dgrijalva/jwt-go"
@@ -73,52 +72,7 @@ func validationLoginRequest(r *http.Request) (loginRequestBody, map[string][]str
 	return requestBody, validationErrors
 }
 
-//func welcome(w http.ResponseWriter, r *http.Request) {
-//
-//	tokenStr, err := getTokenFromHeader(r)
-//	if err != nil {
-//		httpErrors.BadRequest(w, err.Error())
-//	}
-//	fmt.Println("reqToken", tokenStr)
-//
-//	// Initialize a new instance of `Claims`
-//
-//	// Parse the JWT string and store the result in `claims`.
-//	// Note that we are passing the key in this method as well. This method will return an error
-//	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
-//	// or if the signature does not match
-//	claims, err := jwtToken.ParseJWTToken(tokenStr)
-//
-//	if err != nil {
-//		if err == jwt.ErrSignatureInvalid {
-//			httpErrors.UnauthorizedError(w)
-//			return
-//		}
-//		httpErrors.BadRequest(w, err.Error())
-//		return
-//	}
-//
-//	user, ok := getUser(claims.FirstName)
-//	if !ok {
-//		httpErrors.UnauthorizedError(w) // @TODO поменять ошибку
-//
-//		return
-//	}
-//
-//	httpResponse.ToJson(w, user)
-//}
-
-func getTokenFromHeader(r *http.Request) (string, error) {
-	reqToken, ok := r.Header["Authorization"]
-	if !ok {
-		return "", errors.New("header not set")
-	}
-
-	splitToken := strings.Split(reqToken[0], "Bearer ")
-
-	return splitToken[1], nil
-}
-
+/*@ TODO переделать логику обновления токена */
 func (s *server) refreshHandler(w http.ResponseWriter, r *http.Request) {
 
 	header := r.Header.Get("Authorization")
@@ -177,15 +131,6 @@ func (s *server) refreshHandler(w http.ResponseWriter, r *http.Request) {
 	response(w, user)
 
 }
-
-//func getUser(username string) (models.User, bool) {
-//	dbConn := database.GetConnection()
-//	defer dbConn.Close()
-//
-//	userRepository := repository.CreateUserRepository(dbConn)
-//
-//	return userRepository.GetUserByFirstname(username)
-//}
 
 func checkPassword(requestBody loginRequestBody, user *models.User) bool {
 

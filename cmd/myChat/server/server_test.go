@@ -214,7 +214,7 @@ func TestServer_User(t *testing.T) {
 			name:                "not set header",
 			authorizationHeader: false,
 			validToken:          false,
-			expectedCode:        http.StatusUnauthorized,
+			expectedCode:        http.StatusBadRequest,
 		},
 	}
 
