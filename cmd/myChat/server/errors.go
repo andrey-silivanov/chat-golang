@@ -23,11 +23,11 @@ func UnauthorizedError(w http.ResponseWriter, message string) {
 	toJson(w, r)
 }
 
-func StatusInternalServerError(w http.ResponseWriter) {
+func StatusInternalServerError(w http.ResponseWriter, msg string) {
 	r := &Response{
 		HTTPCode: http.StatusInternalServerError,
 		Code:     http.StatusInternalServerError,
-		Data:     http.StatusText(http.StatusInternalServerError),
+		Data:     msg,
 	}
 
 	toJson(w, r)

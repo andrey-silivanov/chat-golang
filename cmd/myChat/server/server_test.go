@@ -346,3 +346,72 @@ func TestServer_Refresh(t *testing.T) {
 		})
 	}
 }
+
+func TestServer_SearchUserHandler(t *testing.T) {
+	store := pgstore.New(teststore.DB)
+	authUser := teststore.UsersFromTest[0]
+	u := teststore.UsersFromTest[1]
+
+	testCases := []struct {
+		name         string
+		payload      map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "return users list",
+			payload: map[string]interface{}{
+				"username": u.Email,
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "empty users list",
+			payload: map[string]interface{}{
+				"username": "not_found@mail.com",
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "empty username",
+			payload: map[string]interface{}{
+				"username": "",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	s := newServer(store)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			b := &bytes.Buffer{}
+			json.NewEncoder(b).Encode(tc.payload)
+			rec := httptest.NewRecorder()
+
+			req, _ := http.NewRequest(http.MethodPost, "/user/search", b)
+			token, _ := jwtToken.GenerateJWTToken(&authUser)
+			req.Header.Set("Authorization", "Bearer "+token)
+
+			s.ServeHTTP(rec, req)
+
+			response := &Response{
+				Data: []models.User{},
+			}
+
+			err := json.NewDecoder(rec.Body).Decode(response)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			contactList := response.Data
+
+			assert.Equal(t, tc.expectedCode, rec.Code)
+			if tc.name == "return users list" {
+				assert.NotEmpty(t, contactList)
+			} else if tc.name == "empty users list" {
+				assert.Empty(t, contactList)
+			}
+		})
+	}
+}

@@ -74,3 +74,24 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 	assert.Error(t, store.ErrRecordNotFound, err)
 	assert.Nil(t, emptyResult)
 }
+
+func TestUserRepository_SearchUser(t *testing.T) {
+	st := New(teststore.DB)
+	repository := st.GetUserRepository()
+	authUser := teststore.UsersFromTest[0]
+	expectedUser := teststore.UsersFromTest[1]
+
+	result, err := repository.SearchUser(expectedUser.Email, &authUser)
+
+	for _, item := range result {
+		assert.EqualValues(t, expectedUser.Email, item.Email)
+		assert.Equal(t, expectedUser.Firstname, item.Firstname)
+		assert.Equal(t, expectedUser.Lastname, item.Lastname)
+	}
+
+	assert.Nil(t, err)
+
+	emptyResult, err := repository.SearchUser("not_found@gmail.com", &authUser)
+	assert.Error(t, store.ErrRecordNotFound, err)
+	assert.Nil(t, emptyResult)
+}

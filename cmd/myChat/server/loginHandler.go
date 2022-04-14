@@ -43,7 +43,7 @@ func (s *server) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	tokenString, err := jwtToken.GenerateJWTToken(user)
 	if err != nil {
-		StatusInternalServerError(w)
+		StatusInternalServerError(w, err.Error())
 		return
 	}
 
@@ -122,7 +122,7 @@ func (s *server) refreshHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	tokenString, err := jwtToken.GenerateJWTToken(user)
 	if err != nil {
-		StatusInternalServerError(w)
+		StatusInternalServerError(w, err.Error())
 		return
 	}
 

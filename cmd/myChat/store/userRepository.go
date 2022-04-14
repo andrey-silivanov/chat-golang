@@ -7,4 +7,5 @@ type UserRepository interface {
 	GetUserByFirstname(firstname string) (*models.User, error)
 	GetUserById(id int) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
+	SearchUser(email string, excludedUser *models.User) ([]models.User, error)
 }

@@ -83,3 +83,30 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
 	return result, nil
 }
+
+func (r *UserRepository) SearchUser(email string, excludedUser *models.User) ([]models.User, error) {
+	var result []models.User
+
+	query := "SELECT id, firstname, lastname, email FROM users where email = $1 and id != $2"
+	rows, err := r.db.Query(query, email, excludedUser.Id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
+
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.User
+		if err := rows.Scan(&item.Id, &item.Firstname, &item.Lastname, &item.Email); err != nil {
+			return result, err
+		}
+		result = append(result, item)
+	}
+	if err = rows.Err(); err != nil {
+		return result, err
+	}
+	return result, nil
+}

@@ -33,7 +33,7 @@ func (s *server) registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := userRepository.Create(u)
 	if err != nil {
-		StatusInternalServerError(w)
+		StatusInternalServerError(w, err.Error())
 	}
 
 	response(w, u)

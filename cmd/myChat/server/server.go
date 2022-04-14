@@ -52,6 +52,7 @@ func (s *server) configureRouter() {
 	private := s.router.PathPrefix("/").Subrouter()
 	private.Use(s.authenticateUserMiddleware)
 	private.HandleFunc("/auth/user", s.userHandler).Methods(http.MethodGet)
+	private.HandleFunc("/user/search", s.searchUserHandler).Methods(http.MethodPost)
 	//private.HandleFunc("/auth/refresh", s.refreshHandler).Methods(http.MethodGet)
 }
 
